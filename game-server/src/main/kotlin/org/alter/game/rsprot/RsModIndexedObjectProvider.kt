@@ -13,6 +13,11 @@ class RsModIndexedObjectProvider(indices: Iterator<Int>, val items: Array<Item?>
         // The full provider (RsModObjectProvider) correctly uses InventoryObject.NULL
         // for empty slots; the partial provider should do the same.
         val item = items[slot] ?: return InventoryObject.NULL
-        return InventoryObject(slot, item.id, item.amount)
+        // Bronzework fix: bank placeholders are stored internally as
+        // Item(placeholderLink, amount = -2) in Alter's container model. The OSRS
+        // wire protocol uses amount = 0 to indicate a greyed-out placeholder
+        // slot. Same negative-count rejection applies in partial updates.
+        val amount = if (item.amount == -2) 0 else item.amount
+        return InventoryObject(slot, item.id, amount)
     }
 }
