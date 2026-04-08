@@ -65,7 +65,17 @@ class BankPlugin(
         }
 
         onInterfaceClose(BANK_INTERFACE_ID) {
-            player.closeInterface(dest = InterfaceDestination.TAB_AREA)
+            // Bronzework fix: when Bank.open switched from TAB_AREA to INVENTORY for
+            // the inventory tab swap, this close handler still targeted TAB_AREA,
+            // which left interface 15 (bank deposit options) stuck in the inventory
+            // slot after the bank closed. Result: walking around with deposit
+            // options on every inventory item, items deposited "remotely" without
+            // being near a bank.
+            // Mirror DepositBoxPlugin's pattern: close the INVENTORY destination
+            // (which removes interface 15) then re-open the INVENTORY destination
+            // (which restores the default interface 149 / normal inventory).
+            player.closeInterface(InterfaceDestination.INVENTORY)
+            player.openInterface(InterfaceDestination.INVENTORY)
             player.closeInputDialog()
         }
 
