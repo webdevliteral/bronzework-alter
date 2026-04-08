@@ -137,7 +137,16 @@ object Bank {
     fun open(p: Player) {
         p.setInterfaceUnderlay(-1, -2)
         p.openInterface(BANK_INTERFACE_ID, InterfaceDestination.MAIN_SCREEN)
-        p.openInterface(INV_INTERFACE_ID, InterfaceDestination.TAB_AREA)
+        // Bronzework fix: was opening INV_INTERFACE_ID at TAB_AREA (fixedChildId = 77,
+        // the overall tab-area frame). The inventory slot specifically is at
+        // INVENTORY.fixedChildId = 83. With TAB_AREA, interface 15 was being placed
+        // at the wrong child, the inventory stayed rendered through the normal
+        // inventory interface (149), and players still saw "Eat / Drop / Examine"
+        // on items instead of "Deposit-1 / 5 / 10 / All / X". Switching to INVENTORY
+        // destination puts interface 15 in the actual inventory slot, which routes
+        // clicks through BankPlugin's onButton(INV_INTERFACE_ID, INV_INTERFACE_CHILD)
+        // handler instead of InventoryPlugin's normal item handler.
+        p.openInterface(INV_INTERFACE_ID, InterfaceDestination.INVENTORY)
         p.setVarp(262, -1)
         p.setComponentText(interfaceId = BANK_INTERFACE_ID, component = 9, text = p.bank.capacity.toString())
         p.runClientScript(
