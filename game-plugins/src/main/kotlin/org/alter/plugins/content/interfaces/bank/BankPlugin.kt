@@ -76,6 +76,34 @@ class BankPlugin(
             // (which restores the default interface 149 / normal inventory).
             player.closeInterface(InterfaceDestination.INVENTORY)
             player.openInterface(InterfaceDestination.INVENTORY)
+            // Bronzework fix: re-applying the inventory's click event bindings.
+            // setInterfaceEvents on interface 149 is normally only called once at
+            // login (see OSRSPlugin); after a close+reopen of INVENTORY destination
+            // the bindings are gone, so the right-click menu loses Use, Equip,
+            // Eat, etc. Mirroring the exact event set from OSRSPlugin so the
+            // restored inventory behaves identically to a fresh login.
+            player.setInterfaceEvents(
+                interfaceId = 149,
+                component = 0,
+                range = 0..27,
+                setting = arrayOf(
+                    InterfaceEvent.ClickOp2,
+                    InterfaceEvent.ClickOp3,
+                    InterfaceEvent.ClickOp4,
+                    InterfaceEvent.ClickOp6,
+                    InterfaceEvent.ClickOp7,
+                    InterfaceEvent.ClickOp10,
+                    InterfaceEvent.UseOnGroundItem,
+                    InterfaceEvent.UseOnNpc,
+                    InterfaceEvent.UseOnObject,
+                    InterfaceEvent.UseOnPlayer,
+                    InterfaceEvent.UseOnInventory,
+                    InterfaceEvent.UseOnComponent,
+                    InterfaceEvent.DRAG_DEPTH1,
+                    InterfaceEvent.DragTargetable,
+                    InterfaceEvent.ComponentTargetable,
+                ),
+            )
             player.closeInputDialog()
         }
 

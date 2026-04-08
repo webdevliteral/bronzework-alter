@@ -112,6 +112,32 @@ class DepositBoxPlugin(
     fun close_deposit_box(p: Player) {
         p.openInterface(InterfaceDestination.INVENTORY)
         p.openInterface(InterfaceDestination.EQUIPMENT)
+        // Bronzework fix: re-apply inventory click event bindings after the close,
+        // matching the OSRSPlugin login binding. Without this, right-click menus
+        // on inventory items lose Use, Equip, Eat, etc. until the player logs
+        // out and back in. Same fix as the bank close handler.
+        p.setInterfaceEvents(
+            interfaceId = 149,
+            component = 0,
+            range = 0..27,
+            setting = arrayOf(
+                InterfaceEvent.ClickOp2,
+                InterfaceEvent.ClickOp3,
+                InterfaceEvent.ClickOp4,
+                InterfaceEvent.ClickOp6,
+                InterfaceEvent.ClickOp7,
+                InterfaceEvent.ClickOp10,
+                InterfaceEvent.UseOnGroundItem,
+                InterfaceEvent.UseOnNpc,
+                InterfaceEvent.UseOnObject,
+                InterfaceEvent.UseOnPlayer,
+                InterfaceEvent.UseOnInventory,
+                InterfaceEvent.UseOnComponent,
+                InterfaceEvent.DRAG_DEPTH1,
+                InterfaceEvent.DragTargetable,
+                InterfaceEvent.ComponentTargetable,
+            ),
+        )
     }
 
     fun deposit_item(
