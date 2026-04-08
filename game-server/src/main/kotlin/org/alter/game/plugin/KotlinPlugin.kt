@@ -266,7 +266,16 @@ abstract class KotlinPlugin(
                 def.interfaceOptions.filterNotNull().filter { it.isNotBlank() }
             }]"
         }
-        r.bindItem(def.id, option + 1, logic)
+        // Bronzework fix: at rev 228, the OSRS protocol's inventory item click op
+        // for the first named menu option is 2, not 1 (op 1 is reserved for an
+        // implicit "Use" action). Empirically verified with ::iteminfo on bread:
+        // bread's interfaceOptions[0] = "Eat" but the click packet decoded by
+        // rsprot's If3ButtonDecoder reports op = 2. The previous +1 offset was
+        // off by one and silently broke every plugin that bound to a named
+        // inventory item option (eat, drink, wield where not equipped via op 3,
+        // etc.). Drop and examine continue to work because they're hardcoded
+        // in InventoryPlugin at op 7 and op 10 respectively.
+        r.bindItem(def.id, option + 2, logic)
     }
 
     /**
