@@ -1,44 +1,38 @@
-# If you have folders or files which you wish to persist in between containers,
-# you must set them up as volumes in `docker-compose.yml` and use the command
-# `docker-compose up` to launch the container.
+# syntax=docker/dockerfile:1.4
 
-# Note: You will need to run the `build` gradle task at least once on the server
-# before you can run this docker config properly. You will also need to run said
-# task whenever you want the docker image to contain the latest changes in your
-# code.
+  # ---- Build stage ----------------------------------------------------------
+  FROM eclipse-temurin:17-jdk AS builder
 
-# Use kotlin image to run the server.
-FROM zenika/kotlin:1.3-eap-jdk8-alpine
+  WORKDIR /build
+  COPY . .
 
-# Define `directory` as '/app/'
-ENV directory /app/
+  # Build the shadow (fat) jar. The gradlew script isn't checked in, so we
+  # invoke the wrapper jar directly. -x test skips tests for speed.
+  RUN java -classpath gradle/wrapper/gradle-wrapper.jar \
+        org.gradle.wrapper.GradleWrapperMain \
+        --no-daemon --console=plain \
+        :game-server:shadowJar -x test
 
-# Set the work directory as ${directory}
-WORKDIR ${directory}
+  # ---- Runtime stage --------------------------------------------------------
+  FROM eclipse-temurin:17-jre
 
-# Copy distribution archive
-ADD game/build/distributions/game-shadow-*.zip .
+  # Layout inside the container:
+  #   /app/
+  #   ├── data/         (bind-mounted from host: cache, xteas.json, rsa/, saves/)
+  #   ├── game.yml      (bind-mounted from host)
+  #   ├── dev-settings.yml (bind-mounted from host)
+  #   └── server/
+  #       └── alter.jar (the shadow fat jar)
+  #
+  # Working directory must be `server/` because Alter's code uses relative paths
+  # like `../data/cache`, `../data/rsa/key.pem`, `../game.yml`.
 
-# Unzip distribution archive
-RUN unzip -q -o *.zip
+  WORKDIR /app/server
+  COPY --from=builder /build/game-server/build/libs/game-server-*-all.jar ./alter.jar
 
-# Delete distribution archive after unzipping
-RUN rm -fv *.zip
+  EXPOSE 43594
 
-# Move distribution files from "game-${version}" to ${WORKDIR} ["."]
-RUN mv game*/* .
-
-# Delete "game-${version}" folder as its contents have been moved
-# to working directory
-RUN rm -rf game*
-
-# Swap the work directory to the "bin" folder
-WORKDIR bin
-
-# Documentation on which ports need to be published when the image is run
-# The container must be executed with `-p 43594:43594/tcp`
-# For example: docker run -it -p 43594:43594/tcp image
-EXPOSE 43594:43594/tcp
-
-# Run the main entry point
-ENTRYPOINT ./game
+  # `echo y` accepts the RSA-key generation prompt on first run.
+  # After the keypair is persisted to /app/data/rsa/key.pem, subsequent runs
+  # don't prompt — the y just gets ignored.
+  ENTRYPOINT ["sh", "-c", "echo y | exec java -Xmx1500m -jar alter.jar"]
