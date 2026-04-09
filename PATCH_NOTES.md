@@ -20,6 +20,13 @@ section as we ship them.
   every other food in the game can be eaten by clicking "Eat" — the food
   is consumed from your inventory and your hitpoints go up. Previously
   the click did nothing because of a server-side option-mapping bug.
+- **NPCs now drop loot when killed.** Killing any NPC produces a drop
+  at their death tile, owned by the killer. Currently every NPC drops
+  bones as a placeholder — real per-NPC drop tables (e.g. raw chicken
+  + feathers from chickens, runes from goblins, etc.) will be added in
+  content sessions. The drop pipeline itself (rolling, spawning,
+  ownership, despawn timers) is fully wired up so adding real tables
+  is just a matter of authoring the data.
 - **Banking is no longer broken.** Several distinct bugs were fixed:
   - Depositing items now updates your inventory correctly. Previously,
     the inventory could glitch or lock your character because the
@@ -47,8 +54,8 @@ section as we ship them.
 
 ### Known Issues
 
-- Items dropped from killing NPCs are not yet appearing on the ground.
-  Investigation in progress.
+- Every NPC currently drops only bones — no varied loot tables yet.
+  This is a placeholder while real per-NPC drop data is authored.
 - Some character animations may appear deformed or visually broken.
   This is a known cosmetic issue and does not affect gameplay.
 - The "Jagex Account" button on the title screen launches a real Jagex
