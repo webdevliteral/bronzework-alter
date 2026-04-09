@@ -85,7 +85,21 @@ class OSRSPlugin(
                 setVarbit(Varbit.COMBAT_LEVEL_VARBIT, combatLevel)
                 setVarbit(Varbit.CHATBOX_UNLOCKED, 1)
                 runClientScript(CommonClientScripts.INTRO_MUSIC_RESTORE)
-                if (getVarp(Varp.PLAYER_HAS_DISPLAY_NAME) == 0 && username.isNotBlank()) {
+                // Bronzework fix: set PLAYER_HAS_DISPLAY_NAME = 1 for any new
+                // account before syncing to the client. The original code only
+                // synced the varp without setting it, so new accounts kept the
+                // default value of 0 (no display name), which causes the
+                // gamepack to show "Please choose a name to use chat" and lock
+                // the player out of chat / interactions.
+                //
+                // We treat the login username AS the display name in offline
+                // mode, so flagging "has display name = true" for every player
+                // is correct. Future work: if/when we add a separate display
+                // name system bound to the bronzeworkgames.com auth, this
+                // should be conditional on whether the auth response includes
+                // a display name.
+                if (username.isNotBlank()) {
+                    setVarp(Varp.PLAYER_HAS_DISPLAY_NAME, 1)
                     syncVarp(Varp.PLAYER_HAS_DISPLAY_NAME)
                 }
                 // Sync attack priority options.
