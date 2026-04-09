@@ -12,7 +12,40 @@ section as we ship them.
 
 ---
 
-## Unreleased
+## 2026-04-09 — v0.2
+
+### Bug Fixes
+
+- **Goblins, giant spiders, imps, rats, and rams no longer deform during
+  combat.** Each species now plays its own correct attack, block, and
+  death animations. Previously they fell back on a human-player default
+  whose bone IDs didn't exist on a non-humanoid skeleton, which twisted
+  the mesh on every swing/hit/death.
+- All cosmetic variants of these NPCs around Lumbridge are covered, not
+  just the canonical entries. Report any species that still deforms and
+  it'll be added in a follow-up.
+
+### Internal / Admin
+
+- Added `::npcanim <id>` admin command — prints the cache animation IDs
+  (stand, walk, rotate, run, etc.) for an NPC. Used to discover where
+  combat animations live for NPCs that aren't already mapped in the API.
+- Added `::tryanim <id>` admin command — plays an arbitrary animation on
+  your own character so an admin can visually identify what each ID
+  looks like and fish out the attack/block/death IDs.
+- Established the per-NPC combat-def authoring pattern under
+  `plugins/content/npcs/combat/`. Adding more species is now a small,
+  repeatable content task instead of a code change.
+
+### Known Issues
+
+- Many NPCs outside the Lumbridge starter area still use the broken
+  default animations. They'll be fixed species-by-species as we work
+  through the content list.
+
+---
+
+## 2026-04-08 — v0.1
 
 ### Bug Fixes
 
