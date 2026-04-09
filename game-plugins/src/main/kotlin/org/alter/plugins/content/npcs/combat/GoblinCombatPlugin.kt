@@ -36,6 +36,7 @@ class GoblinCombatPlugin(
 
     init {
         val goblins = listOf(
+            // 655..678 block (early goblin variants)
             "npc.goblin",
             "npc.goblin_656", "npc.goblin_657", "npc.goblin_658",
             "npc.goblin_659", "npc.goblin_660", "npc.goblin_661",
@@ -43,6 +44,24 @@ class GoblinCombatPlugin(
             "npc.goblin_665", "npc.goblin_666", "npc.goblin_667",
             "npc.goblin_668", "npc.goblin_674", "npc.goblin_677",
             "npc.goblin_678",
+            // 2484..2489 block
+            "npc.goblin_2484", "npc.goblin_2485", "npc.goblin_2486",
+            "npc.goblin_2487", "npc.goblin_2488", "npc.goblin_2489",
+            // 3028..3048 block (Lumbridge spawns live here -- hobgoblins
+            // 3049/3050 are intentionally excluded; they'll need their own def)
+            "npc.goblin_3028", "npc.goblin_3029", "npc.goblin_3030",
+            "npc.goblin_3031", "npc.goblin_3032", "npc.goblin_3033",
+            "npc.goblin_3034", "npc.goblin_3035", "npc.goblin_3036",
+            "npc.goblin_3037", "npc.goblin_3038", "npc.goblin_3039",
+            "npc.goblin_3040", "npc.goblin_3041", "npc.goblin_3042",
+            "npc.goblin_3043", "npc.goblin_3044", "npc.goblin_3045",
+            "npc.goblin_3046", "npc.goblin_3047", "npc.goblin_3048",
+            // 3051..3054 block (continues after the 3049/3050 hobgoblins)
+            "npc.goblin_3051", "npc.goblin_3052", "npc.goblin_3053",
+            "npc.goblin_3054",
+            // 3073..3076 block
+            "npc.goblin_3073", "npc.goblin_3074", "npc.goblin_3075",
+            "npc.goblin_3076",
         )
 
         goblins.forEach { goblin ->
